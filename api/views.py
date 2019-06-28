@@ -16,11 +16,6 @@ def add_user():
     user = User.from_json(request.json)
     db.session.add(user)
     db.session.commit()
-    print(" ")
-    print(" ")
-    print(url_for("main.get_user", id=user.id))
-    print(" ")
-    print(" ")
     return jsonify(user.to_json()), 201, {"Location": url_for("main.get_user", id=user.id)}
 
 
