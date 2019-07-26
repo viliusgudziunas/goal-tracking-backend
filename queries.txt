@@ -1,0 +1,5 @@
+u = User.query.first()
+for goal in u.goals:
+    db.session.delete(goal)
+
+db.session.commit()
