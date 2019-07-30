@@ -31,6 +31,9 @@ class User(db.Model):
     def goals(self):
         return Goal.query.filter_by(author_id=self.id).all()
 
+    def get_goal(self, name):
+        return Goal.query.filter_by(author_id=self.id, name=name).first()
+
     @staticmethod
     def from_json(json_user):
         email = json_user.get("email")
@@ -73,7 +76,6 @@ class Goal(db.Model):
 
     def to_json(self):
         json_goal = {
-            "url": url_for("main.get_goal", id=self.id),
             "name": self.name,
             "timestamp": self.timestamp
         }

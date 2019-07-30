@@ -16,12 +16,6 @@ def get_user(id):
 #
 # Goal
 #
-@main.route("/goals/<int:id>")
-def get_goal(id):
-    goal = Goal.query.get_or_404(id)
-    return jsonify(goal.to_json())
-
-
 @main.route("/goals/", methods=["POST"])
 def new_goal():
     # Temporary workaround before the login is implemented
@@ -31,6 +25,22 @@ def new_goal():
     db.session.add(goal)
     db.session.commit()
     return jsonify("Done"), 201
+
+
+@main.route("/goals/delete-goal/<string:name>", methods=["POST"])
+def delete_goal(name):
+    # Temporary workaround before the login is implemented
+    g.current_user = User.query.filter_by(email="coding@example.com").first()
+    goal = g.current_user.get_goal(name)
+    db.session.delete(goal)
+    db.session.commit()
+    return jsonify("Done"), 200
+
+
+# @main.route("/goals/<int:id>")
+# def get_goal(id):
+#     goal = Goal.query.get_or_404(id)
+#     return jsonify(goal.to_json())
 
 
 # @main.route("/authenticate", methods=["POST"])
