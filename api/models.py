@@ -64,19 +64,24 @@ class Goal(db.Model):
     __tablename__ = "goals"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
+    target = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey("users.id"))
 
     @staticmethod
     def from_json(json_goal):
         name = json_goal.get("name")
+        target = json_goal.get("target")
         if name is None or name == "":
             raise ValidationError("Goal does not have a name")
-        return Goal(name=name)
+        if target is None or target == "":
+            raise ValidationError("Goal does not have a name")
+        return Goal(name=name, target=target)
 
     def to_json(self):
         json_goal = {
             "name": self.name,
+            "target": self.target,
             "timestamp": self.timestamp
         }
         return json_goal
