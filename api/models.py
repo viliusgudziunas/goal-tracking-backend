@@ -67,6 +67,8 @@ class Goal(db.Model):
     target = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    instances_list = db.relationship(
+        "GoalInstance", backref="goal", lazy="dynamic")
 
     @staticmethod
     def from_json(json_goal):
@@ -82,6 +84,30 @@ class Goal(db.Model):
         json_goal = {
             "name": self.name,
             "target": self.target,
-            "timestamp": self.timestamp
+            "timestamp": self.timestamp,
+            "instances": [instance.to_json() for instance in self.instances]
         }
         return json_goal
+
+    @property
+    def instances(self):
+        return GoalInstance.query.filter_by(goal_id=self.id).all()
+
+
+class GoalInstance(db.Model):
+    __tablename__ = "instances of a goal"
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    goal_id = db.Column(db.Integer, db.ForeignKey("goals.id"))
+
+    def to_json(self):
+        json_goal_instance = {
+            "id": self.id,
+            "goal_id": self.goal_id,
+            "date": self.date
+        }
+        return json_goal_instance
+
+    @property
+    def date(self):
+        return self.timestamp.strftime("%Y-%m-%d %H:%M:%S:%f")
