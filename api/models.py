@@ -82,6 +82,7 @@ class Goal(db.Model):
 
     def to_json(self):
         json_goal = {
+            "id": self.id,
             "name": self.name,
             "target": self.target,
             "timestamp": self.timestamp,
@@ -107,6 +108,13 @@ class GoalInstance(db.Model):
             "date": self.date
         }
         return json_goal_instance
+
+    @staticmethod
+    def from_json(json_goal_instance):
+        goal_id = json_goal_instance.get("goal_id")
+        if goal_id is None or goal_id == "":
+            raise ValidationError("Goal does not have a name")
+        return GoalInstance(goal_id=goal_id)
 
     @property
     def date(self):
