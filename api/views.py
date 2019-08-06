@@ -32,6 +32,9 @@ def delete_goal(name):
     # Temporary workaround before the login is implemented
     g.current_user = User.query.filter_by(email="coding@example.com").first()
     goal = g.current_user.get_goal(name)
+    goal_instances = goal.instances
+    for instance in goal_instances:
+        db.session.delete(instance)
     db.session.delete(goal)
     db.session.commit()
     return jsonify("Done"), 200

@@ -105,7 +105,7 @@ class GoalInstance(db.Model):
         json_goal_instance = {
             "id": self.id,
             "goal_id": self.goal_id,
-            "date": self.date
+            "timestamp": self.timestamp
         }
         return json_goal_instance
 
@@ -113,7 +113,7 @@ class GoalInstance(db.Model):
     def from_json(json_goal_instance):
         goal_id = json_goal_instance.get("goal_id")
         if goal_id is None or goal_id == "":
-            raise ValidationError("Goal does not have a name")
+            raise ValidationError("Goal does not have an ID")
         return GoalInstance(goal_id=goal_id)
 
     @property
