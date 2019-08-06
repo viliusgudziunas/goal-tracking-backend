@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, url_for, request, current_app, g
 from . import db
-from .models import User, Goal
+from .models import User, Goal, GoalInstance
 from .exceptions import ValidationError
 
 main = Blueprint("main", __name__)
@@ -32,9 +32,24 @@ def delete_goal(name):
     # Temporary workaround before the login is implemented
     g.current_user = User.query.filter_by(email="coding@example.com").first()
     goal = g.current_user.get_goal(name)
+    goal_instances = goal.instances
+    for instance in goal_instances:
+        db.session.delete(instance)
     db.session.delete(goal)
     db.session.commit()
     return jsonify("Done"), 200
+
+#
+# GoalInstance
+#
+@main.route("/new_goal_instance", methods=["POST"])
+def new_goal_instance():
+    # Temporary workaround before the login is implemented
+    g.current_user = User.query.filter_by(email="coding@example.com").first()
+    goal_instance = GoalInstance.from_json(request.json)
+    db.session.add(goal_instance)
+    db.session.commit()
+    return jsonify("Done"), 201
 
 
 # @main.route("/goals/<int:id>")

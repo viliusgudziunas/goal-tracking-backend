@@ -64,19 +64,58 @@ class Goal(db.Model):
     __tablename__ = "goals"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
+    target = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    instances_list = db.relationship(
+        "GoalInstance", backref="goal", lazy="dynamic")
 
     @staticmethod
     def from_json(json_goal):
         name = json_goal.get("name")
+        target = json_goal.get("target")
         if name is None or name == "":
             raise ValidationError("Goal does not have a name")
-        return Goal(name=name)
+        if target is None or target == "":
+            raise ValidationError("Goal does not have a name")
+        return Goal(name=name, target=target)
 
     def to_json(self):
         json_goal = {
+            "id": self.id,
             "name": self.name,
-            "timestamp": self.timestamp
+            "target": self.target,
+            "timestamp": self.timestamp,
+            "instances": [instance.to_json() for instance in self.instances]
         }
         return json_goal
+
+    @property
+    def instances(self):
+        return GoalInstance.query.filter_by(goal_id=self.id).all()
+
+
+class GoalInstance(db.Model):
+    __tablename__ = "instances of a goal"
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    goal_id = db.Column(db.Integer, db.ForeignKey("goals.id"))
+
+    def to_json(self):
+        json_goal_instance = {
+            "id": self.id,
+            "goal_id": self.goal_id,
+            "timestamp": self.timestamp
+        }
+        return json_goal_instance
+
+    @staticmethod
+    def from_json(json_goal_instance):
+        goal_id = json_goal_instance.get("goal_id")
+        if goal_id is None or goal_id == "":
+            raise ValidationError("Goal does not have an ID")
+        return GoalInstance(goal_id=goal_id)
+
+    @property
+    def date(self):
+        return self.timestamp.strftime("%Y-%m-%d %H:%M:%S:%f")
