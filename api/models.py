@@ -118,4 +118,4 @@ class GoalInstance(db.Model):
 
     @property
     def date(self):
-        return self.timestamp.strftime("%a %b %m %Y %H:%M:%S")
+        return self.timestamp.strftime("%a %b %D %Y %H:%M:%S")
