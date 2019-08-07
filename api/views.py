@@ -6,6 +6,14 @@ from .exceptions import ValidationError
 main = Blueprint("main", __name__)
 
 #
+# User
+#
+@main.route("/users/<int:id>")
+def get_user(id):
+    user = User.query.get_or_404(id)
+    return jsonify(user.goals_to_json())
+
+#
 # Goal
 #
 @main.route("/goals/new-goal", methods=["POST"])
@@ -53,11 +61,6 @@ def change_goal_target(id):
     db.session.add(goal)
     db.session.commit()
     return jsonify(goal.to_json()), 202
-
-    # @main.route("/users/<int:id>")
-    # def get_user(id):
-    #     user = User.query.get_or_404(id)
-    #     return jsonify(user.goals_to_json())
 
     # @main.route("/goals/<int:id>")
     # def get_goal(id):
