@@ -47,7 +47,7 @@ class User(db.Model):
         return json_user
 
     def goals_to_json(self):
-        {goal.to_json() for goal in self.goals}
+        return [goal.to_json() for goal in self.goals]
 
     def generate_auth_token(self, expiration):
         s = Serializer(current_app.config["SECRET_KEY"], expires_in=expiration)

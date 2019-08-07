@@ -6,14 +6,6 @@ from .exceptions import ValidationError
 main = Blueprint("main", __name__)
 
 #
-# User
-#
-@main.route("/users/<int:id>")
-def get_user(id):
-    user = User.query.get_or_404(id)
-    return jsonify(user.to_json())
-
-#
 # Goal
 #
 @main.route("/goals/new-goal", methods=["POST"])
@@ -29,23 +21,27 @@ def new_goal():
 
 @main.route("/goals/delete-goal/<int:id>", methods=["POST"])
 def delete_goal(id):
+    # Temporary workaround before the login is implemented
+    g.current_user = User.query.filter_by(email="coding@example.com").first()
     goal = Goal.query.filter_by(id=id).first()
     goal_instances = goal.instances
     for instance in goal_instances:
         db.session.delete(instance)
     db.session.delete(goal)
     db.session.commit()
-    return jsonify("Done"), 200
+    return jsonify(g.current_user.goals_to_json()), 200
 
 #
 # GoalInstance
 #
-@main.route("/new_goal_instance", methods=["POST"])
+@main.route("/goals/new-goal-instance", methods=["POST"])
 def new_goal_instance():
+    goal_id = request.json.get("goal_id")
     goal_instance = GoalInstance.from_json(request.json)
     db.session.add(goal_instance)
     db.session.commit()
-    return jsonify("Done"), 201
+    goal = Goal.query.filter_by(id=goal_id).first()
+    return jsonify(goal.to_json()), 201
 
 
 @main.route("/goals/change-goal-target/<int:id>", methods=["POST"])
@@ -57,6 +53,11 @@ def change_goal_target(id):
     db.session.add(goal)
     db.session.commit()
     return jsonify(goal.to_json()), 202
+
+    # @main.route("/users/<int:id>")
+    # def get_user(id):
+    #     user = User.query.get_or_404(id)
+    #     return jsonify(user.goals_to_json())
 
     # @main.route("/goals/<int:id>")
     # def get_goal(id):
