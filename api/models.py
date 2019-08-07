@@ -105,7 +105,7 @@ class GoalInstance(db.Model):
         json_goal_instance = {
             "id": self.id,
             "goal_id": self.goal_id,
-            "timestamp": self.timestamp
+            "timestamp": self.date
         }
         return json_goal_instance
 
@@ -118,4 +118,4 @@ class GoalInstance(db.Model):
 
     @property
     def date(self):
-        return self.timestamp.strftime("%Y-%m-%d %H:%M:%S:%f")
+        return self.timestamp.strftime("%a %b %m %Y %H:%M:%S")
