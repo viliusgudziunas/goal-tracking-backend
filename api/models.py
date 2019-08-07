@@ -77,7 +77,7 @@ class Goal(db.Model):
         if name is None or name == "":
             raise ValidationError("Goal does not have a name")
         if target is None or target == "":
-            raise ValidationError("Goal does not have a name")
+            raise ValidationError("Goal does not have a target")
         return Goal(name=name, target=target)
 
     def to_json(self):
@@ -105,7 +105,7 @@ class GoalInstance(db.Model):
         json_goal_instance = {
             "id": self.id,
             "goal_id": self.goal_id,
-            "timestamp": self.timestamp
+            "timestamp": self.date
         }
         return json_goal_instance
 
@@ -118,4 +118,4 @@ class GoalInstance(db.Model):
 
     @property
     def date(self):
-        return self.timestamp.strftime("%Y-%m-%d %H:%M:%S:%f")
+        return self.timestamp.strftime("%a %b %D %Y %H:%M:%S")
