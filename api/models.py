@@ -46,6 +46,9 @@ class User(db.Model):
         }
         return json_user
 
+    def goals_to_json(self):
+        return [goal.to_json() for goal in self.goals]
+
     def generate_auth_token(self, expiration):
         s = Serializer(current_app.config["SECRET_KEY"], expires_in=expiration)
         return s.dumps({"id": self.id}).decode("utf-8")
@@ -85,7 +88,7 @@ class Goal(db.Model):
             "id": self.id,
             "name": self.name,
             "target": self.target,
-            "timestamp": self.timestamp,
+            "timestamp": self.date,
             "instances": [instance.to_json() for instance in self.instances]
         }
         return json_goal
@@ -93,6 +96,10 @@ class Goal(db.Model):
     @property
     def instances(self):
         return GoalInstance.query.filter_by(goal_id=self.id).all()
+
+    @property
+    def date(self):
+        return self.timestamp.strftime("%a %b %d %Y %H:%M:%S")
 
 
 class GoalInstance(db.Model):
@@ -118,4 +125,4 @@ class GoalInstance(db.Model):
 
     @property
     def date(self):
-        return self.timestamp.strftime("%a %b %D %Y %H:%M:%S")
+        return self.timestamp.strftime("%a %b %d %Y %H:%M:%S")
