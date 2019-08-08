@@ -88,7 +88,7 @@ class Goal(db.Model):
             "id": self.id,
             "name": self.name,
             "target": self.target,
-            "timestamp": self.timestamp,
+            "timestamp": self.date,
             "instances": [instance.to_json() for instance in self.instances]
         }
         return json_goal
@@ -96,6 +96,10 @@ class Goal(db.Model):
     @property
     def instances(self):
         return GoalInstance.query.filter_by(goal_id=self.id).all()
+
+    @property
+    def date(self):
+        return self.timestamp.strftime("%a %b %d %Y %H:%M:%S")
 
 
 class GoalInstance(db.Model):
@@ -121,4 +125,4 @@ class GoalInstance(db.Model):
 
     @property
     def date(self):
-        return self.timestamp.strftime("%a %b %D %Y %H:%M:%S")
+        return self.timestamp.strftime("%a %b %d %Y %H:%M:%S")
