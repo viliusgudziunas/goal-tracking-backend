@@ -27,40 +27,40 @@ class User(db.Model):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    # def generate_auth_token(self, expiration):
+    #     s = Serializer(current_app.config["SECRET_KEY"], expires_in=expiration)
+    #     return s.dumps({"id": self.id}).decode("utf-8")
+
+    # @staticmethod
+    # def verify_auth_token(token):
+    #     s = Serializer(current_app.config["SECRET_KEY"])
+    #     try:
+    #         data = s.loads(token)
+    #     except:
+    #         return None
+    #     return User.query.get(data["id"])
+
+    # @staticmethod
+    # def from_json(json_user):
+    #     email = json_user.get("email")
+    #     password = json_user.get("password")
+    #     return User(email=email, password=password)
+
+    def to_json(self):
+        json_user = {
+            "goals": self.goals_to_json
+        }
+        return json_user
+
     @property
     def goals(self):
         return Goal.query.filter_by(author_id=self.id).all()
 
-    def get_goal(self, name):
-        return Goal.query.filter_by(author_id=self.id, name=name).first()
-
-    @staticmethod
-    def from_json(json_user):
-        email = json_user.get("email")
-        password = json_user.get("password")
-        return User(email=email, password=password)
-
-    def to_json(self):
-        json_user = {
-            "goals": [goal.to_json() for goal in self.goals]
-        }
-        return json_user
-
     def goals_to_json(self):
         return [goal.to_json() for goal in self.goals]
 
-    def generate_auth_token(self, expiration):
-        s = Serializer(current_app.config["SECRET_KEY"], expires_in=expiration)
-        return s.dumps({"id": self.id}).decode("utf-8")
-
-    @staticmethod
-    def verify_auth_token(token):
-        s = Serializer(current_app.config["SECRET_KEY"])
-        try:
-            data = s.loads(token)
-        except:
-            return None
-        return User.query.get(data["id"])
+    # def get_goal(self, name):
+    #     return Goal.query.filter_by(author_id=self.id, name=name).first()
 
 
 class Goal(db.Model):
@@ -103,10 +103,17 @@ class Goal(db.Model):
 
 
 class GoalInstance(db.Model):
-    __tablename__ = "instances of a goal"
+    __tablename__ = "goal instances"
     id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     goal_id = db.Column(db.Integer, db.ForeignKey("goals.id"))
+
+    @staticmethod
+    def from_json(json_goal_instance):
+        goal_id = json_goal_instance.get("goal_id")
+        if goal_id is None or goal_id == "":
+            raise ValidationError("Goal instance does not have a goal ID")
+        return GoalInstance(goal_id=goal_id)
 
     def to_json(self):
         json_goal_instance = {
@@ -115,13 +122,6 @@ class GoalInstance(db.Model):
             "timestamp": self.date
         }
         return json_goal_instance
-
-    @staticmethod
-    def from_json(json_goal_instance):
-        goal_id = json_goal_instance.get("goal_id")
-        if goal_id is None or goal_id == "":
-            raise ValidationError("Goal does not have an ID")
-        return GoalInstance(goal_id=goal_id)
 
     @property
     def date(self):
