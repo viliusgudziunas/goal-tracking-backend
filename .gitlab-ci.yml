@@ -1,0 +1,10 @@
+stages:
+  - test
+
+test:
+  stage: test
+  script:
+    - pip install -r requirements/common.txt
+    - flask test
+  only:
+    - master
