@@ -1,0 +1,14 @@
+image: python:3.7
+
+stages:
+  - test
+
+before_script:
+  - pip install -r requirements/common.txt
+
+test:
+  stage: test
+  script:
+    - flask test
+  only:
+    - master
