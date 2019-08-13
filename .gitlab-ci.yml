@@ -9,7 +9,6 @@ before_script:
 test:
   stage: test
   script:
-    - export FLASK_APP=app.py
     - flask test
   only:
     - master
