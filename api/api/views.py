@@ -1,7 +1,16 @@
 from flask import jsonify, url_for, request, current_app, g
 from .. import db
 from ..models import User, Goal, GoalInstance
+from ..tasks import temp
 from . import api
+
+
+@api.route("/temp")
+def do_bg_task():
+    print(" ")
+    print("1")
+    print(" ")
+    temp.apply_async(countdown=5)
 
 #
 # User
