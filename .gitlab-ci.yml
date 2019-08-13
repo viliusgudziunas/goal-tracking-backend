@@ -4,6 +4,8 @@ stages:
 test:
   stage: test
   script:
+    - apt-get update -qy
+    - apt-get install python-dev python-pip
     - pip install -r requirements/common.txt
     - flask test
   only:
