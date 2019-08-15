@@ -1,7 +1,21 @@
 from flask import jsonify, url_for, request, current_app, g
-from .. import db
+from .. import db, celery
 from ..models import User, Goal, GoalInstance
 from . import api
+
+
+@celery.task
+def add(x, y):
+    print(" ")
+    print(x + y)
+    print(" ")
+    return x + y
+
+
+@api.route("/temp")
+def temp():
+    add(3, 4)
+    return "<div>Hello</div>"
 
 #
 # User

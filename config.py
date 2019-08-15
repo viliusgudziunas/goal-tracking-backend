@@ -3,9 +3,11 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
-    SECRET_KEY = os.environ.get("SECRET_KEY") or "hard to guess string"
+    # SECRET_KEY = os.environ.get("SECRET_KEY") or "hard to guess string"
+    # GOALS_PER_PAGE = 10
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    GOALS_PER_PAGE = 10
+    CELERY_BROKER_URL = "redis://localhost:6379/0"
+    CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
 
     @staticmethod
     def init_app(app):
