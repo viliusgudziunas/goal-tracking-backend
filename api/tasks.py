@@ -2,7 +2,8 @@ from . import celery
 
 
 @celery.task
-def temp():
+def add(x, y):
     print(" ")
-    print("Hello")
+    print(x + y)
     print(" ")
+    return x + y

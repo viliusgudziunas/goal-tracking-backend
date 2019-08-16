@@ -1,16 +1,8 @@
 from flask import jsonify, url_for, request, current_app, g
-from .. import db, celery
+from .. import db
 from ..models import User, Goal, GoalInstance
-from ..tasks import temp
+from ..tasks import add
 from . import api
-
-
-@celery.task
-def add(x, y):
-    print(" ")
-    print(x + y)
-    print(" ")
-    return x + y
 
 
 @api.route("/temp")
