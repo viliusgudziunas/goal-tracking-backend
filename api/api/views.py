@@ -45,12 +45,16 @@ def delete_goal(id):
     return jsonify(g.current_user.goals_to_json()), 200
 
 
-@api.route("/goals/change-goal-target/<int:id>", methods=["POST"])
-def change_goal_target(id):
+@api.route("/goals/change-goal/<int:id>", methods=["POST"])
+def change_goal(id):
     goal_id = request.json.get("goal_id")
+    new_name = request.json.get("name")
     new_target = request.json.get("target")
     goal = Goal.query.filter_by(id=goal_id).first()
-    goal.target = new_target
+    if new_name != "":
+        goal.name = new_name
+    if new_target != "":
+        goal.target = new_target
     db.session.add(goal)
     db.session.commit()
     return jsonify(goal.to_json()), 202
