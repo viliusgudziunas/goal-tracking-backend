@@ -67,6 +67,7 @@ class Goal(db.Model):
     __tablename__ = "goals"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
+    target_type = db.Column(db.Integer)
     target = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey("users.id"))
@@ -76,17 +77,21 @@ class Goal(db.Model):
     @staticmethod
     def from_json(json_goal):
         name = json_goal.get("name")
-        target = json_goal.get("target")
+        target_type = int(json_goal.get("target_type"))
+        target = int(json_goal.get("target"))
         if name is None or name == "":
             raise ValidationError("Goal does not have a name")
+        if target_type is None or target_type == "":
+            raise ValidationError("Goal does not have a target type")
         if target is None or target == "":
             raise ValidationError("Goal does not have a target")
-        return Goal(name=name, target=target)
+        return Goal(name=name, target_type=target_type, target=target)
 
     def to_json(self):
         json_goal = {
             "id": self.id,
             "name": self.name,
+            "target_type": self.target_type,
             "target": self.target,
             "timestamp": self.date,
             "instances": [instance.to_json() for instance in self.instances]
