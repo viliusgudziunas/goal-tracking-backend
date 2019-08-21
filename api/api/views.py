@@ -64,6 +64,9 @@ def change_goal(id):
 #
 @api.route("/goals/new-goal-instance", methods=["POST"])
 def new_goal_instance():
+    print(" ")
+    print(request.json)
+    print(" ")
     goal_id = request.json.get("goal_id")
     goal_instance = GoalInstance.from_json(request.json)
     db.session.add(goal_instance)

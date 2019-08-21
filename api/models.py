@@ -111,6 +111,7 @@ class GoalInstance(db.Model):
     __tablename__ = "goal instances"
     id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    hours_completed = db.Column(db.Float)
     goal_id = db.Column(db.Integer, db.ForeignKey("goals.id"))
 
     @staticmethod
@@ -118,14 +119,20 @@ class GoalInstance(db.Model):
         goal_id = json_goal_instance.get("goal_id")
         if goal_id is None or goal_id == "":
             raise ValidationError("Goal instance does not have a goal ID")
-        return GoalInstance(goal_id=goal_id)
+        hours_completed = json_goal_instance.get("hours_completed")
+        if hours_completed is None or hours_completed == "":
+            return GoalInstance(goal_id=goal_id)
+        return GoalInstance(goal_id=goal_id, hours_completed=hours_completed)
 
     def to_json(self):
         json_goal_instance = {
             "id": self.id,
             "goal_id": self.goal_id,
-            "timestamp": self.date
+            "timestamp": self.date,
         }
+        goal = Goal.query.filter_by(id=self.goal_id).first()
+        if goal.target_type == 2:
+            json_goal_instance["hours_completed"] = self.hours_completed
         return json_goal_instance
 
     @property
