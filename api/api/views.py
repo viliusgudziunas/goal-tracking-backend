@@ -1,14 +1,7 @@
 from flask import jsonify, url_for, request, current_app, g
 from .. import db
 from ..models import User, Goal, GoalInstance
-from ..tasks import add
 from . import api
-
-
-@api.route("/temp")
-def temp():
-    add(3, 4)
-    return "<div>Hello</div>"
 
 #
 # User
