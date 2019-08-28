@@ -1,4 +1,4 @@
-from api.models import User, Goal, GoalInstance
+from api.models import User, Goal, GoalInstance, DayRecords
 from api import create_app, db
 from flask_migrate import Migrate
 import click
@@ -19,7 +19,7 @@ migrate = Migrate(app, db)
 @app.shell_context_processor
 def make_shell_context():
     """Open python shell session with database set up."""
-    return dict(db=db, User=User, Goal=Goal, GoalInstance=GoalInstance)
+    return dict(db=db, User=User, Goal=Goal, GoalInstance=GoalInstance, DayRecords=DayRecords)
 
 
 @app.cli.command()

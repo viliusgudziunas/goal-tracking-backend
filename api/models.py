@@ -27,25 +27,6 @@ class User(db.Model):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    # def generate_auth_token(self, expiration):
-    #     s = Serializer(current_app.config["SECRET_KEY"], expires_in=expiration)
-    #     return s.dumps({"id": self.id}).decode("utf-8")
-
-    # @staticmethod
-    # def verify_auth_token(token):
-    #     s = Serializer(current_app.config["SECRET_KEY"])
-    #     try:
-    #         data = s.loads(token)
-    #     except:
-    #         return None
-    #     return User.query.get(data["id"])
-
-    # @staticmethod
-    # def from_json(json_user):
-    #     email = json_user.get("email")
-    #     password = json_user.get("password")
-    #     return User(email=email, password=password)
-
     def to_json(self):
         json_user = {
             "goals": self.goals_to_json
@@ -59,9 +40,6 @@ class User(db.Model):
     def goals_to_json(self):
         return [goal.to_json() for goal in self.goals]
 
-    # def get_goal(self, name):
-    #     return Goal.query.filter_by(author_id=self.id, name=name).first()
-
 
 class Goal(db.Model):
     __tablename__ = "goals"
@@ -72,7 +50,8 @@ class Goal(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     instances_list = db.relationship(
-        "GoalInstance", backref="goal", lazy="dynamic")
+        "GoalInstance", backref="goal", lazy="dynamic"
+    )
 
     @staticmethod
     def from_json(json_goal):
@@ -113,6 +92,7 @@ class GoalInstance(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     hours_completed = db.Column(db.Float)
     goal_id = db.Column(db.Integer, db.ForeignKey("goals.id"))
+    day_recorded_date = db.Column(db.String, db.ForeignKey("day_records.date"))
 
     @staticmethod
     def from_json(json_goal_instance):
@@ -138,3 +118,17 @@ class GoalInstance(db.Model):
     @property
     def date(self):
         return self.timestamp.strftime("%a %b %d %Y %H:%M:%S")
+
+
+class DayRecords(db.Model):
+    __tablename__ = "day_records"
+    date = db.Column(
+        db.String, primary_key=True,
+        default=datetime.utcnow().strftime("%Y-%m-%d")
+    )
+    instances_list = db.relationship(
+        "GoalInstance", backref="day_records", lazy="dynamic"
+    )
+
+    def __init__(self, instances):
+        self.instances_list = instances
