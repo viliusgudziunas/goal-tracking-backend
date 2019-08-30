@@ -73,7 +73,8 @@ class Goal(db.Model):
             "target_type": self.target_type,
             "target": self.target,
             "timestamp": self.date,
-            "instances": [instance.to_json() for instance in self.instances]
+            "instances": [instance.to_json() for instance in self.instances],
+            "author_id": author_id
         }
         return json_goal
 
