@@ -38,12 +38,16 @@ def delete_goal(id):
     return jsonify(g.current_user.goals_to_json()), 200
 
 
-@api.route("/goals/change-goal-target/<int:id>", methods=["POST"])
-def change_goal_target(id):
+@api.route("/goals/change-goal/<int:id>", methods=["POST"])
+def change_goal(id):
     goal_id = request.json.get("goal_id")
+    new_name = request.json.get("name")
     new_target = request.json.get("target")
     goal = Goal.query.filter_by(id=goal_id).first()
-    goal.target = new_target
+    if new_name != "":
+        goal.name = new_name
+    if new_target != "":
+        goal.target = new_target
     db.session.add(goal)
     db.session.commit()
     return jsonify(goal.to_json()), 202
@@ -59,47 +63,3 @@ def new_goal_instance():
     db.session.commit()
     goal = Goal.query.filter_by(id=goal_id).first()
     return jsonify(goal.to_json()), 201
-
-    # @api.route("/goals/<int:id>")
-    # def get_goal(id):
-    #     goal = Goal.query.get_or_404(id)
-    #     return jsonify(goal.to_json())
-
-    # @api.route("/authenticate", methods=["POST"])
-    # def authenticate():
-    #     email = request.json.get("email")
-    #     password = request.json.get("password")
-    #     user = User.query.filter_by(email=email.lower()).first()
-    #     if not user:
-    #         raise ValidationError("Email or password incorrect")
-    #     g.current_user = user
-    #     if user.verify_password(password):
-    #         print("Hello")
-    #         return jsonify({"token": g.current_user.generate_auth_token(expiration=86400), "expiration": 86400})
-    #     raise ValidationError("Email or password incorrect")
-
-    # @api.route("/users/", methods=["POST"])
-    # def add_user():
-    #     user = User.from_json(request.json)
-    #     db.session.add(user)
-    #     db.session.commit()
-    #     return jsonify(user.to_json()), 201, {"Location": url_for("api.get_user", id=user.id)}
-
-    # @api.route("/users/<int:id>/goals/")
-    # def get_user_goals(id):
-    #     user = User.query.get_or_404(id)
-    #     page = request.args.get("page", 1, type=int)
-    #     pagination = user.goals_list.paginate(
-    #         page, per_page=current_app.config["GOALS_PER_PAGE"], error_out=False)
-    #     goals = pagination.items
-    #     prev = None
-    #     if pagination.has_prev:
-    #         prev = url_for("api.get_user_goals", id=id, page=page-1)
-    #     next = None
-    #     if pagination.has_next:
-    #         next = url_for("api.get_user_goals", id=id, page=page+1)
-    #     return jsonify({
-    #         "goals": [goal.to_json() for goal in goals],
-    #         "prev": prev,
-    #         "next": next
-    #     })
