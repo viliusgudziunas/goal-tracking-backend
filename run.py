@@ -1,9 +1,10 @@
 from api.models import User, Goal, GoalInstance
-from api import create_app, db
+from api import factory, db
 from flask_migrate import Migrate
 import click
 import sys
 import os
+import api
 
 COV = None
 if os.environ.get("FLASK_COVERAGE"):
@@ -12,7 +13,8 @@ if os.environ.get("FLASK_COVERAGE"):
     COV.start()
 
 
-app = create_app(os.getenv("FLASK_CONFIG") or "default")
+app = factory.create_app(os.getenv("FLASK_CONFIG")
+                         or "default", celery=api.celery)
 migrate = Migrate(app, db)
 
 
@@ -48,3 +50,6 @@ def test(coverage, test_names):
         COV.html_report(directory=covdir)
         print("HTML version: file://%s/index.html" % covdir)
         COV.erase()
+
+# if __name__ == "__main__":
+#   app.run()

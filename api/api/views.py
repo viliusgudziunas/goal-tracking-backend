@@ -1,6 +1,7 @@
 from flask import jsonify, url_for, request, current_app, g
 from .. import db
 from ..models import User, Goal, GoalInstance
+from ..tasks import test
 from . import api
 
 #
@@ -22,6 +23,7 @@ def new_goal():
     goal.author = g.current_user
     db.session.add(goal)
     db.session.commit()
+    test()
     return jsonify(goal.to_json()), 201
 
 

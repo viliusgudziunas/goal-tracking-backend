@@ -1,5 +1,5 @@
 import unittest
-from app import create_app, db
+from run import create_app, db
 from api.models import GoalInstance
 from api.exceptions import ValidationError
 
